@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シンプルなストップウォッチ</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* 画面全体の高さ */
+            background-color: #f0f8ff; /* 薄い青の背景 */
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #display {
+            font-size: 5em; /* 大きなフォント */
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #0056b3; /* 青色の表示 */
+            background-color: #fff;
+            padding: 20px 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .buttons button {
+            padding: 15px 30px;
+            margin: 10px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        #startBtn { background-color: #28a745; color: white; } /* 緑色 */
+        #stopBtn { background-color: #dc3545; color: white; } /* 赤色 */
+        #resetBtn { background-color: #007bff; color: white; } /* 青色 */
+
+        .buttons button:active {
+            transform: translateY(2px); /* 押したときに沈む */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="display">00:00:00</div>
+
+    <div class="buttons">
+        <button id="startBtn">スタート</button>
+        <button id="stopBtn">ストップ</button>
+        <button id="resetBtn">リセット</button>
+    </div>
+
+    <script>
+        let startTime;
+        let elapsedTime = 0;
+        let timerInterval;
+        let isRunning = false;
+
+        const display = document.getElementById('display');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            return [hours, minutes, seconds]
+                .map(unit => String(unit).padStart(2, '0'))
+                .join(':');
+        }
+
+        function start() {
+            if (!isRunning) {
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(function printTime() {
+                    elapsedTime = Date.now() - startTime;
+                    display.textContent = formatTime(elapsedTime);
+                }, 1000); // 1秒ごとに更新 (ミリ秒単位も表示するなら100に)
+                isRunning = true;
+            }
+        }
+
+        function stop() {
+            if (isRunning) {
+                clearInterval(timerInterval);
+                isRunning = false;
+            }
+        }
+
+        function reset() {
+            stop(); // まずタイマーを停止
+            elapsedTime = 0;
+            display.textContent = formatTime(elapsedTime);
+        }
+
+        startBtn.addEventListener('click', start);
+        stopBtn.addEventListener('click', stop);
+        resetBtn.addEventListener('click', reset);
+
+    </script>
+</body>
+</html>
